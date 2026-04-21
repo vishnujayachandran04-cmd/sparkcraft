@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SparkCraft Welding — Precision. Strength. Trust.</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --orange: #F97316;
+    --orange-dark: #C2571A;
+    --orange-light: #FFF1E6;
+    --navy: #1A2332;
+    --slate: #3D4E63;
+    --muted: #6B7B8E;
+    --border: #E2E8F0;
+    --bg: #FAFAF8;
+    --white: #FFFFFF;
+    --radius: 10px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: var(--bg);
+    color: var(--navy);
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Barlow Condensed', sans-serif;
+    line-height: 1.1;
+  }
+
+  a { text-decoration: none; color: inherit; }
+
+  img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  .container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--navy);
+  }
+
+  .nav-logo span { color: var(--orange); }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--slate);
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--orange); }
+
+  .nav-cta {
+    background: var(--orange);
+    color: #fff !important;
+    padding: 9px 22px;
+    border-radius: 6px;
+    font-weight: 700 !important;
+    transition: background 0.2s !important;
+  }
+
+  .nav-cta:hover { background: var(--orange-dark) !important; color: #fff !important; }
+
+  /* ── HERO ── */
+  #hero {
+    padding-top: 64px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background: var(--white);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    padding: 5rem 0;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--orange-light);
+    color: var(--orange-dark);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .hero-title {
+    font-size: 80px;
+    font-weight: 800;
+    color: var(--navy);
+    line-height: 1;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-title span { color: var(--orange); }
+
+  .hero-desc {
+    font-size: 18px;
+    color: var(--muted);
+    font-weight: 300;
+    max-width: 460px;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+
+  .btn-primary {
+    background: var(--orange);
+    color: #fff;
+    padding: 14px 32px;
+    border-radius: var(--radius);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    transition: background 0.2s, transform 0.15s;
+    display: inline-block;
+  }
+
+  .btn-primary:hover { background: var(--orange-dark); transform: translateY(-1px); }
+
+  .btn-secondary {
+    color: var(--slate);
+    font-weight: 700;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s;
+  }
+
+  .btn-secondary:hover { color: var(--orange); }
+  .btn-secondary::after { content: '→'; }
+
+  .hero-stats {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .stat-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--orange);
+    line-height: 1;
+  }
+
+  .stat-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  .hero-image {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    height: 540px;
+    background: linear-gradient(135deg, #1A2332 0%, #2D3F55 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-image-placeholder {
+    text-align: center;
+    color: rgba(255,255,255,0.25);
+  }
+
+  .hero-image-placeholder svg { margin: 0 auto 1rem; }
+
+  .hero-image-placeholder p { font-size: 13px; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1px; text-transform: uppercase; }
+
+  .hero-image-badge {
+    position: absolute;
+    bottom: 24px; left: 24px;
+    background: var(--orange);
+    color: #fff;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+
+  .hero-image-badge strong { display: block; font-size: 22px; font-weight: 800; }
+  .hero-image-badge span { font-size: 13px; opacity: 0.85; }
+
+  /* ── SECTION COMMONS ── */
+  section { padding: 7rem 0; }
+
+  .section-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 0.75rem;
+  }
+
+  .section-title {
+    font-size: 52px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 1rem;
+  }
+
+  .section-sub {
+    font-size: 17px;
+    color: var(--muted);
+    font-weight: 300;
+    max-width: 540px;
+  }
+
+  .section-header { margin-bottom: 3.5rem; }
+
+  /* ── SERVICES ── */
+  #services { background: var(--white); }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .service-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 2rem;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .service-card:hover {
+    border-color: var(--orange);
+    transform: translateY(-3px);
+  }
+
+  .service-icon {
+    width: 52px; height: 52px;
+    background: var(--orange-light);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+  }
+
+  .service-icon svg { width: 26px; height: 26px; stroke: var(--orange); }
+
+  .service-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .service-desc { font-size: 15px; color: var(--muted); line-height: 1.6; }
+
+  /* ── ABOUT / WHY US ── */
+  #about {
+    background: var(--navy);
+    color: #fff;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
+
+  .about-image {
+    height: 480px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.2);
+    text-align: center;
+  }
+
+  .about-image svg { width: 64px; height: 64px; margin: 0 auto 1rem; }
+  .about-image p { font-size: 13px; letter-spacing: 1px; text-transform: uppercase; font-family: 'Barlow Condensed', sans-serif; }
+
+  #about .section-tag { color: var(--orange); }
+  #about .section-title { color: #fff; }
+  #about .section-sub { color: rgba(255,255,255,0.6); max-width: 100%; }
+
+  .checklist { list-style: none; margin: 2rem 0; display: flex; flex-direction: column; gap: 1rem; }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 16px;
+    color: rgba(255,255,255,0.85);
+  }
+
+  .check-dot {
+    flex-shrink: 0;
+    margin-top: 4px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--orange);
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .check-dot svg { width: 12px; height: 12px; }
+
+  /* ── GALLERY ── */
+  #gallery { background: var(--bg); }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 240px 240px;
+    gap: 1rem;
+  }
+
+  .gallery-item {
+    border-radius: 12px;
+    overflow: hidden;
+    background: #D1D9E2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8fa0b5;
+    text-align: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: transform 0.2s;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .gallery-item:hover { transform: scale(1.02); }
+  .gallery-item:nth-child(1) { grid-column: span 2; background: #BDC7D3; }
+  .gallery-item:nth-child(4) { grid-column: span 2; background: #BDC7D3; }
+
+  .gallery-item-inner { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .gallery-item-inner svg { width: 32px; height: 32px; }
+
+  /* ── TESTIMONIALS ── */
+  #testimonials { background: var(--white); }
+
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .testimonial-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 2rem;
+  }
+
+  .stars { color: var(--orange); font-size: 18px; letter-spacing: 2px; margin-bottom: 1rem; }
+
+  .testimonial-text {
+    font-size: 15px;
+    color: var(--slate);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+  }
+
+  .testimonial-author { display: flex; align-items: center; gap: 12px; }
+
+  .author-avatar {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: var(--orange-light);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--orange-dark);
+    flex-shrink: 0;
+  }
+
+  .author-name { font-weight: 700; font-size: 14px; }
+  .author-role { font-size: 13px; color: var(--muted); }
+
+  /* ── FAQ ── */
+  #faq { background: var(--bg); }
+
+  .faq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .faq-item {
+    background: var(--white);
+    padding: 2rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .faq-item:hover { background: var(--orange-light); }
+
+  .faq-q {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 0.6rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .faq-a { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+  /* ── CONTACT ── */
+  #contact { background: var(--navy); color: #fff; }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 5rem;
+    align-items: start;
+  }
+
+  #contact .section-tag { color: var(--orange); }
+  #contact .section-title { color: #fff; }
+  #contact .section-sub { color: rgba(255,255,255,0.6); }
+
+  .contact-info { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 1.5rem; }
+
+  .contact-item { display: flex; align-items: flex-start; gap: 14px; }
+
+  .contact-item-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: rgba(249,115,22,0.15);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .contact-item-icon svg { width: 20px; height: 20px; stroke: var(--orange); }
+
+  .contact-item-label { font-size: 12px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
+  .contact-item-value { font-size: 16px; font-weight: 700; color: #fff; }
+
+  .contact-form {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 2.5rem;
+    color: var(--navy);
+  }
+
+  .form-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  .form-group { margin-bottom: 1.2rem; }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--slate);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  input, textarea, select {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 14px;
+    font-size: 15px;
+    font-family: 'Lato', sans-serif;
+    color: var(--navy);
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input:focus, textarea:focus, select:focus { border-color: var(--orange); }
+
+  textarea { min-height: 110px; resize: vertical; }
+
+  .form-submit {
+    width: 100%;
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 0.5rem;
+  }
+
+  .form-submit:hover { background: var(--orange-dark); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #0F1825;
+    color: rgba(255,255,255,0.5);
+    padding: 2.5rem 0;
+  }
+
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .footer-logo span { color: var(--orange); }
+
+  .footer-copy { font-size: 13px; }
+
+  .footer-links { display: flex; gap: 1.5rem; }
+  .footer-links a { font-size: 13px; color: rgba(255,255,255,0.4); transition: color 0.2s; }
+  .footer-links a:hover { color: var(--orange); }
+
+  /* ── DECORATIVE SPARKS ── */
+  .spark-bg {
+    position: absolute;
+    top: 0; right: 0;
+    width: 45%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .hero-content { position: relative; z-index: 1; }
+
+  /* ── TRUST BAR ── */
+  .trust-bar {
+    background: var(--orange);
+    padding: 1rem 0;
+    overflow: hidden;
+  }
+
+  .trust-track {
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+    white-space: nowrap;
+  }
+
+  .trust-item {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.9;
+  }
+
+  .trust-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5); flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">Spark<span>Craft</span></div>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#testimonials">Reviews</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#contact" class="nav-cta">Get a Quote</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="spark-bg">
+    <svg viewBox="0 0 600 800" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <radialGradient id="rg1" cx="60%" cy="40%" r="50%">
+          <stop offset="0%" stop-color="#FFF1E6" stop-opacity="1"/>
+          <stop offset="100%" stop-color="#FAFAF8" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <rect width="600" height="800" fill="url(#rg1)"/>
+      <!-- Spark lines -->
+      <g opacity="0.15" stroke="#F97316" stroke-width="1.5" fill="none">
+        <line x1="120" y1="200" x2="180" y2="120"/>
+        <line x1="180" y1="120" x2="160" y2="60"/>
+        <line x1="180" y1="120" x2="240" y2="100"/>
+        <line x1="240" y1="100" x2="290" y2="40"/>
+        <line x1="300" y1="350" x2="380" y2="280"/>
+        <line x1="380" y1="280" x2="360" y2="200"/>
+        <line x1="380" y1="280" x2="450" y2="260"/>
+        <line x1="450" y1="260" x2="520" y2="180"/>
+        <line x1="200" y1="550" x2="260" y2="480"/>
+        <line x1="260" y1="480" x2="240" y2="410"/>
+        <line x1="260" y1="480" x2="330" y2="460"/>
+        <line x1="100" y1="700" x2="150" y2="630"/>
+        <line x1="150" y1="630" x2="130" y2="560"/>
+        <line x1="150" y1="630" x2="220" y2="600"/>
+        <line x1="400" y1="600" x2="470" y2="540"/>
+        <line x1="470" y1="540" x2="450" y2="470"/>
+        <line x1="470" y1="540" x2="540" y2="510"/>
+      </g>
+      <!-- Spark dots -->
+      <g fill="#F97316" opacity="0.3">
+        <circle cx="180" cy="120" r="4"/>
+        <circle cx="240" cy="100" r="3"/>
+        <circle cx="380" cy="280" r="4"/>
+        <circle cx="450" cy="260" r="3"/>
+        <circle cx="260" cy="480" r="4"/>
+        <circle cx="150" cy="630" r="3"/>
+        <circle cx="470" cy="540" r="4"/>
+        <circle cx="160" cy="60" r="2"/>
+        <circle cx="290" cy="40" r="2"/>
+        <circle cx="520" cy="180" r="2"/>
+        <circle cx="330" cy="460" r="2"/>
+        <circle cx="220" cy="600" r="2"/>
+      </g>
+    </svg>
+  </div>
+  <div class="container hero-content">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-badge">Licensed &amp; Insured Contractor</div>
+        <h1 class="hero-title">Built to<br><span>Last.</span></h1>
+        <p class="hero-desc">SparkCraft delivers precision welding for residential, commercial, and industrial clients. Quality craftsmanship on every single job.</p>
+        <div class="hero-actions">
+          <a href="#contact" class="btn-primary">Get a Free Quote</a>
+          <a href="#gallery" class="btn-secondary">See Our Work</a>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <div class="stat-num">500+</div>
+            <div class="stat-label">Projects Completed</div>
+          </div>
+          <div>
+            <div class="stat-num">14</div>
+            <div class="stat-label">Years Experience</div>
+          </div>
+          <div>
+            <div class="stat-num">100%</div>
+            <div class="stat-label">Satisfaction Rate</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="hero-image">
+          <div class="hero-image-placeholder">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+              <circle cx="40" cy="40" r="38" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+              <path d="M20 60 L35 30 L40 45 L50 20 L60 60" stroke="rgba(249,115,22,0.6)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="40" cy="45" r="4" fill="rgba(249,115,22,0.4)"/>
+            </svg>
+            <p>Hero Photo Here</p>
+          </div>
+          <div class="hero-image-badge">
+            <strong>★ 4.9</strong>
+            <span>From 200+ reviews</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="container">
+    <div class="trust-track">
+      <div class="trust-item"><span class="trust-dot"></span> MIG &amp; TIG Welding</div>
+      <div class="trust-item"><span class="trust-dot"></span> Structural Steel</div>
+      <div class="trust-item"><span class="trust-dot"></span> Custom Fabrication</div>
+      <div class="trust-item"><span class="trust-dot"></span> Same-Day Estimates</div>
+      <div class="trust-item"><span class="trust-dot"></span> Fully Certified</div>
+      <div class="trust-item"><span class="trust-dot"></span> 14 Years Experience</div>
+      <div class="trust-item"><span class="trust-dot"></span> Residential &amp; Commercial</div>
+    </div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">What We Do</div>
+      <h2 class="section-title">Our Services</h2>
+      <p class="section-sub">From small repairs to large-scale fabrication, SparkCraft handles every job with the same level of care and precision.</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="service-name">Structural Welding</div>
+        <p class="service-desc">Heavy-duty structural welding for buildings, bridges, and industrial frameworks. Meets all code and safety standards.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <div class="service-name">Custom Fabrication</div>
+        <p class="service-desc">Bespoke metal fabrication for gates, railings, furniture, art, and any custom project you can imagine.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        </div>
+        <div class="service-name">Pipe Welding</div>
+        <p class="service-desc">Certified pipe welding for oil, gas, water, and HVAC systems. Precision work with zero-leak results.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        <div class="service-name">Repair &amp; Restoration</div>
+        <p class="service-desc">Fix broken welds, cracked frames, and worn machinery. We restore metalwork to full strength and function.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <div class="service-name">Residential Projects</div>
+        <p class="service-desc">Gates, fences, handrails, balconies, and decorative ironwork for homes. Beautiful, durable, and built to last.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </div>
+        <div class="service-name">Mobile On-Site Welding</div>
+        <p class="service-desc">We bring the equipment to you. On-site welding for farms, factories, construction sites, and more.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-image">
+        <div style="text-align:center">
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="30" r="16" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/><path d="M16 72c0-13.25 10.75-24 24-24s24 10.75 24 24" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" fill="none"/></svg>
+          <p>About Photo Here</p>
+        </div>
+      </div>
+      <div>
+        <div class="section-tag">Why SparkCraft</div>
+        <h2 class="section-title">Trusted by hundreds of clients across the region</h2>
+        <p class="section-sub">We built SparkCraft on a simple promise — do the job right the first time. No shortcuts, no surprises.</p>
+        <ul class="checklist">
+          <li>
+            <div class="check-dot">
+              <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span>Certified AWS &amp; CWB welders with 14+ years of field experience</span>
+          </li>
+          <li>
+            <div class="check-dot">
+              <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span>Fully licensed, bonded, and insured for your peace of mind</span>
+          </li>
+          <li>
+            <div class="check-dot">
+              <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span>Free detailed quotes with transparent, upfront pricing — no hidden fees</span>
+          </li>
+          <li>
+            <div class="check-dot">
+              <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span>On-time delivery and workmanship guaranteed on every project</span>
+          </li>
+          <li>
+            <div class="check-dot">
+              <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span>Mobile welding units available — we come to your job site</span>
+          </li>
+        </ul>
+        <a href="#contact" class="btn-primary" style="display:inline-block;">Book a Consultation</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Portfolio</div>
+      <h2 class="section-title">Our Work</h2>
+      <p class="section-sub">Every project is a testament to the SparkCraft standard. Here's a glimpse at what we've built.</p>
+    </div>
+    <div class="gallery-grid">
+      <div class="gallery-item">
+        <div class="gallery-item-inner">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="24" height="24" rx="3" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M4 22l7-7 5 5 4-4 8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Structural Gate Project</span>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-item-inner">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="24" height="24" rx="3" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M4 22l7-7 5 5 4-4 8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Pipe Welding</span>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-item-inner">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="24" height="24" rx="3" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M4 22l7-7 5 5 4-4 8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Custom Railing</span>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-item-inner">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="24" height="24" rx="3" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M4 22l7-7 5 5 4-4 8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Metal Sculpture</span>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-item-inner">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="24" height="24" rx="3" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M4 22l7-7 5 5 4-4 8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Industrial Frame</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Client Reviews</div>
+      <h2 class="section-title">What Our Clients Say</h2>
+      <p class="section-sub">Don't take our word for it — here's what the people we've worked with have to say.</p>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"SparkCraft did an incredible job on our warehouse mezzanine. The work was precise, completed ahead of schedule, and the team was professional throughout. Highly recommend."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">RK</div>
+          <div>
+            <div class="author-name">Ramesh Kumar</div>
+            <div class="author-role">Warehouse Manager</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"We had a custom gate made for our property and it looks absolutely stunning. The craftsmanship is top notch and it's incredibly sturdy. Best investment we've made."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">PM</div>
+          <div>
+            <div class="author-name">Priya Menon</div>
+            <div class="author-role">Homeowner</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"Called them for an emergency repair on a broken conveyor frame. They arrived within hours and had us back up and running the same day. Lifesavers. We use SparkCraft for everything now."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">AJ</div>
+          <div>
+            <div class="author-name">Arun Joseph</div>
+            <div class="author-role">Plant Supervisor</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">FAQ</div>
+      <h2 class="section-title">Common Questions</h2>
+      <p class="section-sub">Everything you need to know before getting started with SparkCraft.</p>
+    </div>
+    <div class="faq-grid">
+      <div class="faq-item">
+        <div class="faq-q">Do you provide free estimates?</div>
+        <p class="faq-a">Yes — all quotes are completely free and come with a detailed breakdown. No obligation, no pressure.</p>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How long does a typical project take?</div>
+        <p class="faq-a">It depends on the scope. Small repairs can be done same-day, while large fabrication jobs may take 1–2 weeks. We always provide a timeline upfront.</p>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Are you licensed and insured?</div>
+        <p class="faq-a">Absolutely. SparkCraft is fully licensed, bonded, and carries comprehensive liability insurance on every job we take.</p>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What types of welding do you offer?</div>
+        <p class="faq-a">We work with MIG, TIG, Stick (SMAW), and flux-core welding methods — choosing the right one based on material and application.</p>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can you weld on my job site?</div>
+        <p class="faq-a">Yes. We have fully-equipped mobile welding trucks and can come directly to construction sites, farms, factories, or your home.</p>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Do you offer a workmanship warranty?</div>
+        <p class="faq-a">Yes. All our welds and fabricated structures come with a workmanship guarantee. If something's not right, we come back and fix it at no charge.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div>
+        <div class="section-tag">Contact Us</div>
+        <h2 class="section-title">Let's Build Something Together</h2>
+        <p class="section-sub">Ready to start your project? Get in touch for a free consultation and quote.</p>
+        <div class="contact-info">
+          <div class="contact-item">
+            <div class="contact-item-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 8.9A16 16 0 0 0 14.9 15.9l.84-.84a2 2 0 0 1 2.1-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2.01z"/></svg>
+            </div>
+            <div>
+              <div class="contact-item-label">Phone</div>
+              <div class="contact-item-value">+1 (555) 123-4567</div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div>
+              <div class="contact-item-label">Email</div>
+              <div class="contact-item-value">hello@sparkcraft.com</div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div>
+              <div class="contact-item-label">Location</div>
+              <div class="contact-item-value">Serving the Greater Metro Area</div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div>
+              <div class="contact-item-label">Hours</div>
+              <div class="contact-item-value">Mon–Sat, 7:00 AM – 6:00 PM</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="contact-form">
+        <div class="form-title">Get Your Free Quote</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fname">First Name</label>
+            <input type="text" id="fname" placeholder="John">
+          </div>
+          <div class="form-group">
+            <label for="lname">Last Name</label>
+            <input type="text" id="lname" placeholder="Doe">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="you@email.com">
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" placeholder="+1 (555) 000-0000">
+        </div>
+        <div class="form-group">
+          <label for="service">Service Needed</label>
+          <select id="service">
+            <option value="">— Select a service —</option>
+            <option>Structural Welding</option>
+            <option>Custom Fabrication</option>
+            <option>Pipe Welding</option>
+            <option>Repair &amp; Restoration</option>
+            <option>Residential Project</option>
+            <option>Mobile On-Site Welding</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="message">Project Details</label>
+          <textarea id="message" placeholder="Tell us about your project — size, materials, timeline..."></textarea>
+        </div>
+        <button class="form-submit" id="submit-btn" onclick="submitQuote()">Send Message →</button>
+        <div id="form-msg" style="display:none;margin-top:1rem;padding:12px 16px;border-radius:8px;font-size:14px;font-weight:700;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">Spark<span>Craft</span></div>
+      <div class="footer-copy">© 2025 SparkCraft Welding. All rights reserved.</div>
+      <div class="footer-links">
+        <a href="#services">Services</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ── Nav shadow on scroll ── */
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    nav.style.boxShadow = window.scrollY > 10 ? '0 2px 20px rgba(0,0,0,0.08)' : 'none';
+  });
+
+  /* ── Quote form submission ── */
+  const API_BASE = 'http://localhost:3000'; // change to your deployed URL in production
+
+  async function submitQuote() {
+    const btn = document.getElementById('submit-btn');
+    const msg = document.getElementById('form-msg');
+
+    const payload = {
+      first_name: document.getElementById('fname').value.trim(),
+      last_name:  document.getElementById('lname').value.trim(),
+      email:      document.getElementById('email').value.trim(),
+      phone:      document.getElementById('phone').value.trim(),
+      service:    document.getElementById('service').value,
+      message:    document.getElementById('message').value.trim(),
+    };
+
+    // Basic client-side check
+    if (!payload.first_name || !payload.last_name || !payload.email || !payload.service) {
+      showMsg('Please fill in all required fields.', 'error');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    try {
+      const res  = await fetch(`${API_BASE}/api/quote`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload),
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        showMsg(data.message, 'success');
+        // Clear the form
+        ['fname','lname','email','phone','message'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('service').value = '';
+        btn.textContent = 'Sent ✓';
+      } else {
+        showMsg(data.error || 'Something went wrong. Please try again.', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Send Message →';
+      }
+    } catch (err) {
+      showMsg('Could not reach the server. Please call us directly.', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Send Message →';
+    }
+  }
+
+  function showMsg(text, type) {
+    const el = document.getElementById('form-msg');
+    el.textContent = text;
+    el.style.display = 'block';
+    if (type === 'success') {
+      el.style.background = '#D1FAE5';
+      el.style.color = '#065F46';
+      el.style.border = '1px solid #6EE7B7';
+    } else {
+      el.style.background = '#FEE2E2';
+      el.style.color = '#991B1B';
+      el.style.border = '1px solid #FCA5A5';
+    }
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+</script>
+</body>
+</html>

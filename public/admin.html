@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SparkCraft Admin — Quote Requests</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --orange: #F97316; --orange-dark: #C2571A; --orange-light: #FFF1E6;
+    --navy: #1A2332; --slate: #3D4E63; --muted: #6B7B8E;
+    --border: #E2E8F0; --bg: #F1F5F9; --white: #FFFFFF;
+    --green: #10B981; --red: #EF4444; --blue: #3B82F6; --amber: #F59E0B;
+  }
+  body { font-family: 'Lato', sans-serif; background: var(--bg); color: var(--navy); font-size: 14px; min-height: 100vh; }
+  a { text-decoration: none; color: inherit; }
+
+  /* Login screen */
+  #login-screen {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: var(--navy);
+  }
+  .login-box {
+    background: var(--white); border-radius: 16px; padding: 3rem;
+    width: 380px; text-align: center;
+  }
+  .login-logo { font-family: 'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 0.5rem; }
+  .login-logo span { color: var(--orange); }
+  .login-sub { color: var(--muted); font-size: 14px; margin-bottom: 2rem; }
+  .login-box input {
+    width: 100%; border: 1.5px solid var(--border); border-radius: 8px;
+    padding: 12px 14px; font-size: 15px; font-family: 'Lato', sans-serif;
+    margin-bottom: 1rem; outline: none; transition: border-color 0.2s;
+  }
+  .login-box input:focus { border-color: var(--orange); }
+  .login-btn {
+    width: 100%; background: var(--orange); color: #fff; border: none;
+    border-radius: 8px; padding: 13px; font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .login-btn:hover { background: var(--orange-dark); }
+  .login-error { color: var(--red); font-size: 13px; margin-top: 0.75rem; display: none; }
+
+  /* App shell */
+  #app { display: none; }
+
+  /* Sidebar */
+  .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0; width: 220px;
+    background: var(--navy); color: #fff; padding: 1.5rem;
+    display: flex; flex-direction: column;
+  }
+  .sidebar-logo { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 2rem; }
+  .sidebar-logo span { color: var(--orange); }
+
+  .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  .sidebar-nav button {
+    background: none; border: none; color: rgba(255,255,255,0.6); text-align: left;
+    padding: 10px 12px; border-radius: 8px; font-size: 14px; font-family: 'Lato', sans-serif;
+    cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 8px;
+    font-weight: 700; letter-spacing: 0.3px;
+  }
+  .sidebar-nav button:hover { background: rgba(255,255,255,0.08); color: #fff; }
+  .sidebar-nav button.active { background: var(--orange); color: #fff; }
+
+  .sidebar-footer { font-size: 12px; color: rgba(255,255,255,0.3); }
+  .sidebar-footer button {
+    background: none; border: none; color: rgba(255,255,255,0.4);
+    cursor: pointer; font-size: 12px; padding: 4px 0; transition: color 0.2s;
+  }
+  .sidebar-footer button:hover { color: #fff; }
+
+  /* Main content */
+  .main { margin-left: 220px; padding: 2rem; }
+
+  /* Stat cards */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+  .stat-card {
+    background: var(--white); border-radius: 12px; border: 1px solid var(--border);
+    padding: 1.25rem 1.5rem;
+  }
+  .stat-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 700; margin-bottom: 0.5rem; }
+  .stat-value { font-family: 'Barlow Condensed', sans-serif; font-size: 38px; font-weight: 800; line-height: 1; }
+  .stat-value.orange { color: var(--orange); }
+  .stat-value.green  { color: var(--green); }
+  .stat-value.blue   { color: var(--blue); }
+  .stat-value.amber  { color: var(--amber); }
+
+  /* Toolbar */
+  .toolbar {
+    display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .toolbar-title { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 800; flex: 1; }
+
+  .filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .pill {
+    padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 700;
+    letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer;
+    border: 1.5px solid var(--border); background: var(--white); color: var(--muted);
+    transition: all 0.15s;
+  }
+  .pill:hover, .pill.active { border-color: var(--orange); background: var(--orange-light); color: var(--orange-dark); }
+
+  .refresh-btn {
+    background: var(--orange); color: #fff; border: none; border-radius: 8px;
+    padding: 8px 18px; font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px; font-weight: 700; text-transform: uppercase; cursor: pointer;
+    transition: background 0.2s; letter-spacing: 0.5px;
+  }
+  .refresh-btn:hover { background: var(--orange-dark); }
+
+  /* Table */
+  .table-wrap { background: var(--white); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    background: var(--bg); text-align: left; padding: 12px 16px;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--muted); font-weight: 700; border-bottom: 1px solid var(--border);
+  }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--bg); }
+  td { padding: 12px 16px; vertical-align: middle; }
+
+  .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 100px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .badge-new       { background: #DBEAFE; color: #1E40AF; }
+  .badge-reviewed  { background: #FEF3C7; color: #92400E; }
+  .badge-contacted { background: #D1FAE5; color: #065F46; }
+  .badge-completed { background: #E0E7FF; color: #3730A3; }
+
+  .name-cell { font-weight: 700; font-size: 14px; }
+  .sub-cell  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .action-btn {
+    padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 700;
+    cursor: pointer; border: 1px solid var(--border); background: var(--white);
+    color: var(--slate); transition: all 0.15s; margin-right: 4px;
+  }
+  .action-btn:hover { border-color: var(--orange); color: var(--orange); }
+  .action-btn.danger:hover { border-color: var(--red); color: var(--red); }
+
+  select.status-select {
+    border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px;
+    font-size: 12px; font-family: 'Lato', sans-serif; background: var(--white);
+    cursor: pointer; outline: none;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+    z-index: 200; align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--white); border-radius: 16px; padding: 2rem;
+    width: 520px; max-width: 95vw; max-height: 90vh; overflow-y: auto;
+  }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+  .modal-title { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 800; }
+  .modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--muted); }
+  .modal-row { display: grid; grid-template-columns: 120px 1fr; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .modal-row:last-child { border-bottom: none; }
+  .modal-key { color: var(--muted); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; padding-top: 2px; }
+  .modal-val { color: var(--navy); line-height: 1.6; }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 4rem 2rem; color: var(--muted); }
+  .empty-icon { font-size: 48px; margin-bottom: 1rem; opacity: 0.4; }
+  .empty p { font-size: 16px; }
+
+  /* Toast */
+  #toast {
+    position: fixed; bottom: 24px; right: 24px; background: var(--navy);
+    color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 14px;
+    font-weight: 700; z-index: 300; transform: translateY(80px);
+    transition: transform 0.3s ease; pointer-events: none;
+  }
+  #toast.show { transform: translateY(0); }
+
+  .loading { text-align: center; padding: 3rem; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ─────────────────────────────────────────────────────────── -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">Spark<span>Craft</span></div>
+    <div class="login-sub">Admin Dashboard — Quote Manager</div>
+    <input type="password" id="pwd-input" placeholder="Enter admin password" onkeydown="if(event.key==='Enter') doLogin()">
+    <button class="login-btn" onclick="doLogin()">Sign In</button>
+    <div class="login-error" id="login-error">Incorrect password. Try again.</div>
+  </div>
+</div>
+
+<!-- ── APP ───────────────────────────────────────────────────────────── -->
+<div id="app">
+  <aside class="sidebar">
+    <div class="sidebar-logo">Spark<span>Craft</span></div>
+    <nav class="sidebar-nav">
+      <button class="active" onclick="setView('all')">📋 All Quotes</button>
+      <button onclick="setView('new')">🔵 New</button>
+      <button onclick="setView('reviewed')">🟡 Reviewed</button>
+      <button onclick="setView('contacted')">🟢 Contacted</button>
+      <button onclick="setView('completed')">🟣 Completed</button>
+    </nav>
+    <div class="sidebar-footer">
+      <button onclick="doLogout()">Sign out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- Stats -->
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value orange" id="s-total">—</div></div>
+      <div class="stat-card"><div class="stat-label">New</div><div class="stat-value blue" id="s-new">—</div></div>
+      <div class="stat-card"><div class="stat-label">Contacted</div><div class="stat-value green" id="s-contacted">—</div></div>
+      <div class="stat-card"><div class="stat-label">Completed</div><div class="stat-value amber" id="s-completed">—</div></div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-title" id="view-title">All Quotes</div>
+      <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <div id="table-container" class="loading">Loading…</div>
+    </div>
+  </main>
+</div>
+
+<!-- ── DETAIL MODAL ───────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-name">—</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ── TOAST ──────────────────────────────────────────────────────────── -->
+<div id="toast"></div>
+
+<script>
+const API = 'http://localhost:3000'; // change to deployed URL in production
+let adminPwd = '';
+let currentView = 'all';
+let quotes = [];
+
+// ── Auth ──────────────────────────────────────────────────────────────────────
+async function doLogin() {
+  const pwd = document.getElementById('pwd-input').value;
+  if (!pwd) return;
+  // Test the password against the server
+  const res = await fetch(`${API}/api/admin/stats`, {
+    headers: { 'x-admin-password': pwd }
+  });
+  if (res.ok) {
+    adminPwd = pwd;
+    sessionStorage.setItem('sc_admin', pwd);
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadData();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem('sc_admin');
+  location.reload();
+}
+
+// Auto-login from session
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = sessionStorage.getItem('sc_admin');
+  if (saved) {
+    adminPwd = saved;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadData();
+  }
+});
+
+// ── Data ──────────────────────────────────────────────────────────────────────
+async function loadData() {
+  loadStats();
+  loadQuotes();
+}
+
+async function loadStats() {
+  try {
+    const res = await fetch(`${API}/api/admin/stats`, { headers: { 'x-admin-password': adminPwd } });
+    const d = await res.json();
+    document.getElementById('s-total').textContent     = d.total       || 0;
+    document.getElementById('s-new').textContent       = d.new_count   || 0;
+    document.getElementById('s-contacted').textContent = d.contacted_count || 0;
+    document.getElementById('s-completed').textContent = d.completed_count || 0;
+  } catch(e) { console.error(e); }
+}
+
+async function loadQuotes() {
+  const container = document.getElementById('table-container');
+  container.innerHTML = '<div class="loading">Loading…</div>';
+  try {
+    const url = currentView === 'all'
+      ? `${API}/api/admin/quotes`
+      : `${API}/api/admin/quotes?status=${currentView}`;
+    const res = await fetch(url, { headers: { 'x-admin-password': adminPwd } });
+    quotes = await res.json();
+    renderTable(quotes);
+  } catch(e) {
+    container.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><p>Could not connect to the server.</p></div>';
+  }
+}
+
+function setView(v) {
+  currentView = v;
+  const titles = { all:'All Quotes', new:'New Requests', reviewed:'Reviewed', contacted:'Contacted', completed:'Completed' };
+  document.getElementById('view-title').textContent = titles[v];
+  document.querySelectorAll('.sidebar-nav button').forEach((btn, i) => {
+    btn.classList.toggle('active', ['all','new','reviewed','contacted','completed'][i] === v);
+  });
+  loadQuotes();
+}
+
+// ── Table ─────────────────────────────────────────────────────────────────────
+function renderTable(rows) {
+  const container = document.getElementById('table-container');
+  if (!rows.length) {
+    container.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><p>No quote requests found.</p></div>';
+    return;
+  }
+  container.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Client</th>
+          <th>Service</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  `;
+  const tbody = document.getElementById('tbody');
+  rows.forEach(q => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="color:var(--muted);font-size:12px;">#${q.id}</td>
+      <td>
+        <div class="name-cell">${esc(q.first_name)} ${esc(q.last_name)}</div>
+        <div class="sub-cell">${esc(q.email)}${q.phone ? ' · ' + esc(q.phone) : ''}</div>
+      </td>
+      <td>${esc(q.service)}</td>
+      <td style="color:var(--muted);font-size:12px;white-space:nowrap;">${formatDate(q.created_at)}</td>
+      <td>
+        <select class="status-select" onchange="changeStatus(${q.id}, this.value)">
+          ${['new','reviewed','contacted','completed'].map(s =>
+            `<option value="${s}" ${q.status===s?'selected':''}>${cap(s)}</option>`
+          ).join('')}
+        </select>
+      </td>
+      <td>
+        <button class="action-btn" onclick="viewDetail(${q.id})">View</button>
+        <button class="action-btn danger" onclick="deleteQuote(${q.id})">Delete</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ── Actions ───────────────────────────────────────────────────────────────────
+async function changeStatus(id, status) {
+  try {
+    await fetch(`${API}/api/admin/quotes/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPwd },
+      body: JSON.stringify({ status })
+    });
+    showToast(`Status updated to "${cap(status)}"`);
+    loadStats();
+  } catch(e) { showToast('Update failed'); }
+}
+
+async function deleteQuote(id) {
+  if (!confirm('Delete this quote request? This cannot be undone.')) return;
+  try {
+    await fetch(`${API}/api/admin/quotes/${id}`, {
+      method: 'DELETE',
+      headers: { 'x-admin-password': adminPwd }
+    });
+    showToast('Quote deleted');
+    loadData();
+  } catch(e) { showToast('Delete failed'); }
+}
+
+function viewDetail(id) {
+  const q = quotes.find(x => x.id === id);
+  if (!q) return;
+  document.getElementById('modal-name').textContent = `${q.first_name} ${q.last_name}`;
+  document.getElementById('modal-body').innerHTML = `
+    <div class="modal-row"><div class="modal-key">Email</div>   <div class="modal-val"><a href="mailto:${esc(q.email)}" style="color:var(--orange)">${esc(q.email)}</a></div></div>
+    <div class="modal-row"><div class="modal-key">Phone</div>   <div class="modal-val">${q.phone ? esc(q.phone) : '—'}</div></div>
+    <div class="modal-row"><div class="modal-key">Service</div> <div class="modal-val">${esc(q.service)}</div></div>
+    <div class="modal-row"><div class="modal-key">Message</div> <div class="modal-val">${q.message ? esc(q.message) : '—'}</div></div>
+    <div class="modal-row"><div class="modal-key">Status</div>  <div class="modal-val"><span class="badge badge-${q.status}">${cap(q.status)}</span></div></div>
+    <div class="modal-row"><div class="modal-key">Received</div><div class="modal-val">${formatDate(q.created_at, true)}</div></div>
+  `;
+  document.getElementById('detail-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('detail-modal').classList.remove('open');
+}
+
+document.getElementById('detail-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+function formatDate(str, long) {
+  const d = new Date(str + (str.endsWith('Z') ? '' : 'Z'));
+  return long
+    ? d.toLocaleString('en-US', { dateStyle:'medium', timeStyle:'short' })
+    : d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
