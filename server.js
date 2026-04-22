@@ -1,45 +1,90 @@
 // SparkCraft Welding — Backend Server
+// Stack: Express · Airtable (persistent DB) · nodemailer
+
 require("dotenv").config();
-const express   = require("express");
-const cors      = require("cors");
-const path      = require("path");
-const fs        = require("fs");
-const rateLimit = require("express-rate-limit");
+const express    = require("express");
+const cors       = require("cors");
+const path       = require("path");
+const fs         = require("fs");
+const rateLimit  = require("express-rate-limit");
 const nodemailer = require("nodemailer");
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
-// ── Quotes DB ─────────────────────────────────────────────────────────────────
-const DB_FILE = path.join(__dirname, "quotes.json");
-function readDB() {
-  if (!fs.existsSync(DB_FILE)) fs.writeFileSync(DB_FILE, JSON.stringify({ quotes:[], nextId:1 }, null, 2));
-  return JSON.parse(fs.readFileSync(DB_FILE, "utf8"));
-}
-function writeDB(data) { fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2)); }
-function getAllQuotes() { return readDB().quotes.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)); }
-function getQuotesByStatus(status) { return getAllQuotes().filter(q=>q.status===status); }
-function getQuoteById(id) { return readDB().quotes.find(q=>q.id===parseInt(id)); }
-function insertQuote(data) {
-  const db = readDB();
-  const quote = { id:db.nextId++, ...data, status:"new", created_at:new Date().toISOString() };
-  db.quotes.push(quote); writeDB(db); return quote;
-}
-function updateQuoteStatus(id, status) {
-  const db = readDB();
-  const q = db.quotes.find(q=>q.id===parseInt(id));
-  if (q) q.status = status; writeDB(db);
-}
-function deleteQuoteById(id) {
-  const db = readDB();
-  db.quotes = db.quotes.filter(q=>q.id!==parseInt(id)); writeDB(db);
-}
-function getStats() {
-  const q = getAllQuotes();
-  return { total:q.length, new_count:q.filter(x=>x.status==="new").length, reviewed_count:q.filter(x=>x.status==="reviewed").length, contacted_count:q.filter(x=>x.status==="contacted").length, completed_count:q.filter(x=>x.status==="completed").length };
+// ── Airtable ──────────────────────────────────────────────────────────────────
+const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
+const AIRTABLE_BASE  = process.env.AIRTABLE_BASE;
+const AIRTABLE_TABLE = process.env.AIRTABLE_TABLE || "Quotes";
+const AT_URL = `https://api.airtable.com/v0/${AIRTABLE_BASE}/${encodeURIComponent(AIRTABLE_TABLE)}`;
+
+const atHeaders = {
+  "Authorization": `Bearer ${AIRTABLE_TOKEN}`,
+  "Content-Type": "application/json"
+};
+
+async function atFetch(url, options = {}) {
+  const res = await fetch(url, { ...options, headers: { ...atHeaders, ...(options.headers||{}) } });
+  return res.json();
 }
 
-// ── Gallery DB ────────────────────────────────────────────────────────────────
+async function getAllQuotes() {
+  let records = [];
+  let offset = null;
+  do {
+    const url = AT_URL + (offset ? `?offset=${offset}` : '');
+    const data = await atFetch(url);
+    if (data.records) records = records.concat(data.records);
+    offset = data.offset || null;
+  } while (offset);
+  return records
+    .map(r => ({ id: r.id, ...r.fields }))
+    .sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+}
+
+async function getQuotesByStatus(status) {
+  const url = `${AT_URL}?filterByFormula={status}="${status}"`;
+  const data = await atFetch(url);
+  return (data.records||[]).map(r=>({id:r.id,...r.fields})).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+}
+
+async function getQuoteById(id) {
+  const data = await atFetch(`${AT_URL}/${id}`);
+  if (data.id) return { id: data.id, ...data.fields };
+  return null;
+}
+
+async function insertQuote(fields) {
+  const data = await atFetch(AT_URL, {
+    method: "POST",
+    body: JSON.stringify({ fields: { ...fields, status: "new", created_at: new Date().toISOString() } })
+  });
+  return { id: data.id, ...data.fields };
+}
+
+async function updateQuoteStatus(id, status) {
+  await atFetch(`${AT_URL}/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify({ fields: { status } })
+  });
+}
+
+async function deleteQuoteById(id) {
+  await atFetch(`${AT_URL}/${id}`, { method: "DELETE" });
+}
+
+async function getStats() {
+  const q = await getAllQuotes();
+  return {
+    total: q.length,
+    new_count:       q.filter(x=>x.status==="new").length,
+    reviewed_count:  q.filter(x=>x.status==="reviewed").length,
+    contacted_count: q.filter(x=>x.status==="contacted").length,
+    completed_count: q.filter(x=>x.status==="completed").length
+  };
+}
+
+// ── Gallery DB (JSON file — for images) ───────────────────────────────────────
 const GALLERY_FILE = path.join(__dirname, "gallery.json");
 function readGallery() {
   if (!fs.existsSync(GALLERY_FILE)) fs.writeFileSync(GALLERY_FILE, JSON.stringify({ images:[], nextId:1 }, null, 2));
@@ -62,7 +107,7 @@ let transporter = null;
 if (process.env.SMTP_USER && process.env.SMTP_PASS) {
   transporter = nodemailer.createTransport({ host:process.env.SMTP_HOST||"smtp.gmail.com", port:parseInt(process.env.SMTP_PORT||"587"), secure:process.env.SMTP_SECURE==="true", auth:{user:process.env.SMTP_USER,pass:process.env.SMTP_PASS} });
   console.log("✉️  Email notifications enabled");
-} else { console.log("📭  Email disabled — set SMTP_USER & SMTP_PASS in .env to enable"); }
+} else { console.log("📭  Email disabled"); }
 
 async function sendNotificationEmail(quote) {
   if (!transporter) return;
@@ -71,7 +116,7 @@ async function sendNotificationEmail(quote) {
 }
 async function sendConfirmationEmail(quote) {
   if (!transporter) return;
-  try { await transporter.sendMail({ from:`"SparkCraft Welding" <${process.env.FROM_EMAIL}>`, to:quote.email, subject:`We received your quote request, ${quote.first_name}!`, html:`<div style="font-family:sans-serif"><h2>Thanks, ${quote.first_name}!</h2><p>We received your <b>${quote.service}</b> request and will be in touch within 1 business day.</p><p>Questions? Call <b>(555) 123-4567</b>.</p></div>` }); }
+  try { await transporter.sendMail({ from:`"SparkCraft Welding" <${process.env.FROM_EMAIL}>`, to:quote.email, subject:`We received your quote request, ${quote.first_name}!`, html:`<div style="font-family:sans-serif"><h2>Thanks, ${quote.first_name}!</h2><p>We received your <b>${quote.service}</b> request and will be in touch within 1 business day.</p></div>` }); }
   catch(err) { console.error("Confirmation email failed:", err.message); }
 }
 
@@ -102,50 +147,58 @@ app.post("/api/quote", quoteLimiter, async (req,res) => {
   if (errors.length) return res.status(422).json({error:errors.join(" ")});
   try {
     const {first_name,last_name,email,phone,service,message} = req.body;
-    const quote = insertQuote({ first_name:first_name.trim(), last_name:last_name.trim(), email:email.trim().toLowerCase(), phone:phone?phone.trim():null, service:service.trim(), message:message?message.trim():null });
+    const quote = await insertQuote({ first_name:first_name.trim(), last_name:last_name.trim(), email:email.trim().toLowerCase(), phone:phone?phone.trim():"", service:service.trim(), message:message?message.trim():"" });
     sendNotificationEmail(quote);
     sendConfirmationEmail(quote);
     res.status(201).json({ success:true, message:"Quote received! We'll be in touch within 1 business day.", id:quote.id });
   } catch(err) { console.error(err); res.status(500).json({error:"Something went wrong."}); }
 });
 
-// Public gallery — website loads images from here
-app.get("/api/gallery", (req,res) => {
-  const images = getAllImages().map(img => ({ id:img.id, caption:img.caption, created_at:img.created_at, data:img.data }));
-  res.json(images);
-});
+app.get("/api/gallery", (req,res) => res.json(getAllImages()));
 
 // ── Admin Routes ──────────────────────────────────────────────────────────────
-app.get("/api/admin/quotes",   adminLimiter, requireAdmin, (req,res) => res.json(req.query.status ? getQuotesByStatus(req.query.status) : getAllQuotes()));
-app.get("/api/admin/stats",    adminLimiter, requireAdmin, (req,res) => res.json(getStats()));
-app.get("/api/admin/quotes/:id", adminLimiter, requireAdmin, (req,res) => { const q=getQuoteById(req.params.id); q ? res.json(q) : res.status(404).json({error:"Not found"}); });
-app.patch("/api/admin/quotes/:id", adminLimiter, requireAdmin, (req,res) => {
-  const allowed=["new","reviewed","contacted","completed"];
-  if (!allowed.includes(req.body.status)) return res.status(422).json({error:`Status must be: ${allowed.join(", ")}`});
-  if (!getQuoteById(req.params.id)) return res.status(404).json({error:"Not found"});
-  updateQuoteStatus(req.params.id, req.body.status);
-  res.json({success:true});
-});
-app.delete("/api/admin/quotes/:id", adminLimiter, requireAdmin, (req,res) => {
-  if (!getQuoteById(req.params.id)) return res.status(404).json({error:"Not found"});
-  deleteQuoteById(req.params.id);
-  res.json({success:true});
+app.get("/api/admin/quotes", adminLimiter, requireAdmin, async (req,res) => {
+  try {
+    const quotes = req.query.status ? await getQuotesByStatus(req.query.status) : await getAllQuotes();
+    res.json(quotes);
+  } catch(err) { console.error(err); res.status(500).json({error:"Failed to fetch quotes"}); }
 });
 
-// Admin gallery
+app.get("/api/admin/stats", adminLimiter, requireAdmin, async (req,res) => {
+  try { res.json(await getStats()); }
+  catch(err) { res.status(500).json({error:"Failed to fetch stats"}); }
+});
+
+app.get("/api/admin/quotes/:id", adminLimiter, requireAdmin, async (req,res) => {
+  try {
+    const q = await getQuoteById(req.params.id);
+    q ? res.json(q) : res.status(404).json({error:"Not found"});
+  } catch(err) { res.status(500).json({error:"Failed"}); }
+});
+
+app.patch("/api/admin/quotes/:id", adminLimiter, requireAdmin, async (req,res) => {
+  const allowed=["new","reviewed","contacted","completed"];
+  if (!allowed.includes(req.body.status)) return res.status(422).json({error:`Status must be: ${allowed.join(", ")}`});
+  try { await updateQuoteStatus(req.params.id, req.body.status); res.json({success:true}); }
+  catch(err) { res.status(500).json({error:"Failed"}); }
+});
+
+app.delete("/api/admin/quotes/:id", adminLimiter, requireAdmin, async (req,res) => {
+  try { await deleteQuoteById(req.params.id); res.json({success:true}); }
+  catch(err) { res.status(500).json({error:"Failed"}); }
+});
+
+// Gallery admin
 app.get("/api/admin/gallery", adminLimiter, requireAdmin, (req,res) => res.json(getAllImages()));
 app.post("/api/admin/gallery", adminLimiter, requireAdmin, (req,res) => {
   const { data, caption } = req.body;
   if (!data) return res.status(422).json({ error:"Image data required." });
-  if (data.length > 8 * 1024 * 1024) return res.status(422).json({ error:"Image too large. Max 6MB." });
-  try {
-    const img = insertImage({ data, caption: caption||"" });
-    res.status(201).json({ success:true, id:img.id });
-  } catch(err) { console.error(err); res.status(500).json({ error:"Upload failed." }); }
+  if (data.length > 8*1024*1024) return res.status(422).json({ error:"Image too large." });
+  try { const img = insertImage({ data, caption:caption||"" }); res.status(201).json({ success:true, id:img.id }); }
+  catch(err) { res.status(500).json({ error:"Upload failed." }); }
 });
 app.delete("/api/admin/gallery/:id", adminLimiter, requireAdmin, (req,res) => {
-  deleteImageById(req.params.id);
-  res.json({ success:true });
+  deleteImageById(req.params.id); res.json({ success:true });
 });
 
 app.get("*", (req,res) => res.sendFile(path.join(__dirname,"public","index.html")));
@@ -153,5 +206,6 @@ app.get("*", (req,res) => res.sendFile(path.join(__dirname,"public","index.html"
 app.listen(PORT, () => {
   console.log(`\n🔥  SparkCraft server → http://localhost:${PORT}`);
   console.log(`📋  Admin panel       → http://localhost:${PORT}/admin.html`);
-  console.log(`💾  Data stored in    → quotes.json + gallery.json\n`);
+  console.log(`💾  Quotes stored in  → Airtable`);
+  console.log(`🖼️   Gallery stored in → gallery.json\n`);
 });
