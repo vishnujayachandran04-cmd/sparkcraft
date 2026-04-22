@@ -910,37 +910,8 @@
       <h2 class="section-title">Our Work</h2>
       <p class="section-sub">Every project is a testament to the SparkCraft standard. Here's a glimpse at what we've built.</p>
     </div>
-    <div class="gallery-grid">
-      <div class="gallery-item">
-        <div class="gallery-item-inner">
-          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="24" height="24" rx="3" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M4 22l7-7 5 5 4-4 8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span>Structural Gate Project</span>
-        </div>
-      </div>
-      <div class="gallery-item">
-        <div class="gallery-item-inner">
-          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="24" height="24" rx="3" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M4 22l7-7 5 5 4-4 8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span>Pipe Welding</span>
-        </div>
-      </div>
-      <div class="gallery-item">
-        <div class="gallery-item-inner">
-          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="24" height="24" rx="3" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M4 22l7-7 5 5 4-4 8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span>Custom Railing</span>
-        </div>
-      </div>
-      <div class="gallery-item">
-        <div class="gallery-item-inner">
-          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="24" height="24" rx="3" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M4 22l7-7 5 5 4-4 8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span>Metal Sculpture</span>
-        </div>
-      </div>
-      <div class="gallery-item">
-        <div class="gallery-item-inner">
-          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="24" height="24" rx="3" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M4 22l7-7 5 5 4-4 8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span>Industrial Frame</span>
-        </div>
-      </div>
+   <div class="gallery-grid" id="gallery-grid">
+    <div style="grid-column:span 3;text-align:center;padding:3rem;color:var(--muted);">Loading gallery...</div>
     </div>
   </div>
 </section>
@@ -1207,6 +1178,28 @@
     }
     el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
+  async function loadGallery() {
+  const grid = document.getElementById('gallery-grid');
+  if (!grid) return;
+  try {
+    const res = await fetch(`${API_BASE}/api/gallery`);
+    const images = await res.json();
+    if (!images.length) {
+      grid.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:3rem;color:var(--muted);">No photos yet.</div>';
+      return;
+    }
+    grid.innerHTML = '';
+    images.forEach((img, i) => {
+      const div = document.createElement('div');
+      div.className = 'gallery-item';
+      div.style.background = '#1A2332';
+      if (i === 0 || i === 3) div.style.gridColumn = 'span 2';
+      div.innerHTML = `<img src="${img.data}" alt="${img.caption||'Project'}" style="width:100%;height:100%;object-fit:cover;">`;
+      grid.appendChild(div);
+    });
+  } catch(e) { console.error(e); }
+}
+loadGallery();
 </script>
 </body>
 </html>
